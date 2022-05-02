@@ -106,7 +106,7 @@ class Aimbot:
     def is_target_locked(x, y):
         #plus/minus 5 pixel threshold
         threshold = 5
-        return True if 960 - threshold <= x <= 960 + threshold and 540 - threshold <= y <= 540 + threshold else False
+        return True if 540 - threshold <= x <= 540 + threshold and 540 - threshold <= y <= 540 + threshold else False
 
     def move_crosshair(self, x, y):
         if Aimbot.is_targeted():
@@ -116,7 +116,7 @@ class Aimbot:
 
         if self.debug: start_time = time.perf_counter()
         for rel_x, rel_y in Aimbot.interpolate_coordinates_from_center((x, y), scale):
-            Aimbot.ii_.mi = MouseInput(rel_x, rel_y, 0, 0x0001, 0, ctypes.pointer(Aimbot.extra))
+            Aimbot.ii_.mi = MouseInput(rel_x, rel_y, 1, 0x0001, 1, ctypes.pointer(Aimbot.extra))
             input_obj = Input(ctypes.c_ulong(0), Aimbot.ii_)
             ctypes.windll.user32.SendInput(1, ctypes.byref(input_obj), ctypes.sizeof(input_obj))
             if not self.debug: Aimbot.sleep(self.mouse_delay) #time.sleep is not accurate enough
@@ -127,7 +127,7 @@ class Aimbot:
 
     #generator yields pixel tuples for relative movement
     def interpolate_coordinates_from_center(absolute_coordinates, scale):
-        diff_x = (absolute_coordinates[0] - 960) * scale/Aimbot.pixel_increment
+        diff_x = (absolute_coordinates[0] - 540) * scale/Aimbot.pixel_increment
         diff_y = (absolute_coordinates[1] - 540) * scale/Aimbot.pixel_increment
         length = int(math.dist((0,0), (diff_x, diff_y)))
         if length == 0: return
@@ -160,7 +160,7 @@ class Aimbot:
             results = self.model(frame)
 
             if len(results.xyxy[0]) != 0: #player detected
-                least_crosshair_dist = closest_detection = player_in_frame = False
+                least_crosshair_dist = closest_detection = player_in_frame = True
                 for *box, conf, cls in results.xyxy[0]: #iterate over each player detected
                     x1y1 = [int(x.item()) for x in box[:2]]
                     x2y2 = [int(x.item()) for x in box[2:]]
